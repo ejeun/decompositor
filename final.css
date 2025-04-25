@@ -78,6 +78,33 @@
   backface-visibility: hidden;
 }
 
+@font-face {
+    font-family: 'Nunito';
+    src: url('/fonts/Nunito/Nunito-VariableFont_wght.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Courier Prime';
+    src: url('/fonts/CourierPrime/CourierPrime-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+#loading-text {
+  font-family: 'Courier Prime', monospace;
+  position: fixed;
+  top: 70%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: black;
+  font-size: 1em;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
 main {
   display: none;
   /* display: flex; */

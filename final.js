@@ -1,6 +1,10 @@
 import { mainInnerHTML, formHTML } from './constants.js';
+import { AudioVisualizer } from './visualizer.js';
 
 const pieces = [];
+const birdcall = new Audio('./frames/call.wav')
+let audioElement = null;
+let visualizer = null;
 
 function createMainSection() {
   const main = document.createElement('main');
@@ -54,19 +58,60 @@ function handleScroll() {
       return;
     }
 
+    // Update scroll position first
+    root.style.setProperty('--scroll', Math.floor(window.scrollY) + 'px');
+    root.style.setProperty(
+      '--visible',
+      (Math.floor(window.scrollY - 15000) / -100).toFixed(1),
+    );
+
+    if (currentScroll >= 13000) {
+      //Fade out birdcall
+      birdcall.pause();
+      visualizer.stop();
+      return;
+    }
+
+    // Check if we've scrolled past the final image
     if (currentScroll >= 10000) {
-      window.scrollTo(0, 0);
+      const main = document.querySelector('main');
+      if (main && !visualizer) {
+        main.style.display = 'none';
+        
+        // Fade out background audio if it exists
+        const audioElement = document.querySelector('audio');
+        if (audioElement) {
+          const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          const source = audioContext.createMediaElementSource(audioElement);
+          const gainNode = audioContext.createGain();
+          
+          source.connect(gainNode);
+          gainNode.connect(audioContext.destination);
+          
+          // Start fade out
+          gainNode.gain.setValueAtTime(gainNode.gain.value, audioContext.currentTime);
+          gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 1.0);
+          
+          // Stop audio after fade
+          setTimeout(() => {
+            audioElement.pause();
+          }, 1000);
+        }
+
+        visualizer = new AudioVisualizer();
+        visualizer.start();
+
+        //Fade in birdcall
+        setTimeout(() => {
+          birdcall.play();
+        }, 1000);
+      }
+      return;
     }
 
     // Update last scroll position
     window.lastScrollTop = currentScroll;
 
-    root.style.setProperty('--scroll', Math.floor(window.scrollY) + 'px');
-
-    root.style.setProperty(
-      '--visible',
-      (Math.floor(window.scrollY - 15000) / -100).toFixed(1),
-    );
     let active = null;
 
     if (window.scrollY > 1500) {
@@ -133,6 +178,9 @@ window.onload = () => {
   // Add click handler to blank page
   const blankPage = document.getElementById('blank-page');
   blankPage.addEventListener('click', async () => {
+    // Make the blank page unclickable
+    blankPage.style.pointerEvents = 'none';
+    
     try {
       // Show loading text
       const loadingText = document.createElement('div');
@@ -167,13 +215,11 @@ window.onload = () => {
       // Create audio context and start background music
       const audioContext = new (window.AudioContext ||
         window.webkitAudioContext)();
-      const audioElement = new Audio('./frames/background.mp3');
 
+      audioElement = new Audio('./frames/background.mp3');
       // Add error handling for audio loading
       audioElement.addEventListener('error', (e) => {
         console.error('Audio loading error:', e);
-        // Continue without audio if it fails to load
-        fadeOutLoadingText(createAndShowForm);
       });
 
       audioElement.addEventListener('canplaythrough', () => {
@@ -355,7 +401,7 @@ window.onload = () => {
     } catch (error) {
       console.error('Error requesting permissions:', error);
       alert(
-        'Camera and audio permissions are required to proceed. Please allow access and try again.',
+        'Please allow camera and audio permissions!',
       );
     }
   });
