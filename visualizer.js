@@ -1,8 +1,10 @@
 export class AudioVisualizer {
   constructor() {
     this.audioContext = null;
-    this.analyser = null;
-    this.meyda = null;
+    this.micAnalyser = null;
+    this.speakerAnalyser = null;
+    this.micMeyda = null;
+    this.speakerMeyda = null;
     this.canvas = null;
     this.ctx = null;
     this.animationFrameId = null;
@@ -15,6 +17,7 @@ export class AudioVisualizer {
 
     // Create canvas
     this.canvas = document.createElement('canvas');
+    this.canvas.className = 'visualizer-canvas';
     this.canvas.style.position = 'fixed';
     this.canvas.style.top = '0';
     this.canvas.style.left = '0';
@@ -39,14 +42,28 @@ export class AudioVisualizer {
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)({
       sampleRate: 44100
     });
-    this.analyser = this.audioContext.createAnalyser();
-    this.analyser.fftSize = 512; // Set to 512 for better performance and resolution
-    this.analyser.smoothingTimeConstant = 0.8;
+
+    // Initialize analyzers
+    this.micAnalyser = this.audioContext.createAnalyser();
+    this.speakerAnalyser = this.audioContext.createAnalyser();
+    this.micAnalyser.fftSize = 512;
+    this.speakerAnalyser.fftSize = 512;
+    this.micAnalyser.smoothingTimeConstant = 0.8;
+    this.speakerAnalyser.smoothingTimeConstant = 0.8;
 
     // Initialize Meyda with 512 buffer size
-    this.meyda = Meyda.createMeydaAnalyzer({
+    this.micMeyda = Meyda.createMeydaAnalyzer({
       audioContext: this.audioContext,
-      source: this.analyser,
+      source: this.micAnalyser,
+      bufferSize: 512,
+      sampleRate: 44100,
+      featureExtractors: ['amplitudeSpectrum'],
+      callback: features => this.draw(features)
+    });
+
+    this.speakerMeyda = Meyda.createMeydaAnalyzer({
+      audioContext: this.audioContext,
+      source: this.speakerAnalyser,
       bufferSize: 512,
       sampleRate: 44100,
       featureExtractors: ['amplitudeSpectrum'],
@@ -76,24 +93,35 @@ export class AudioVisualizer {
       // Get microphone input
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const source = this.audioContext.createMediaStreamSource(stream);
-      source.connect(this.analyser);
-      this.meyda.start();
+      source.connect(this.micAnalyser);
+      this.micMeyda.start();
     } catch (err) {
       console.error('Error accessing microphone:', err);
     }
   }
 
   stop() {
-    if (this.animationFrameId) {
-      cancelAnimationFrame(this.animationFrameId);
-    }
-    if (this.meyda) {
-      this.meyda.stop();
-    }
+    // Add fade-out class
     if (this.canvas) {
-      this.canvas.remove();
+      this.canvas.classList.add('fade-out');
+      
+      // Wait for fade animation to complete before cleanup
+      setTimeout(() => {
+        if (this.animationFrameId) {
+          cancelAnimationFrame(this.animationFrameId);
+        }
+        if (this.micMeyda) {
+          this.micMeyda.stop();
+        }
+        if (this.speakerMeyda) {
+          this.speakerMeyda.stop();
+        }
+        if (this.canvas) {
+          this.canvas.remove();
+        }
+        this.isInitialized = false;
+      }, 1000); // Match this with the CSS transition duration
     }
-    this.isInitialized = false;
   }
 
   draw(features) {

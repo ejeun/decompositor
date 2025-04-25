@@ -738,3 +738,19 @@ span:hover {
     transform: translateY(-50%) rotate(calc(var(--compass-rotation) * 1deg + 0.5deg));
   }
 }
+
+.visualizer-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  background: #000000;
+  opacity: 1;
+  transition: opacity 1s ease-out;
+}
+
+.visualizer-canvas.fade-out {
+  opacity: 0;
+}
