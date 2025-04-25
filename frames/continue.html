@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: #000;
+      }
+      video {
+        max-height: 100vh;
+        object-fit: cover;
+        transform: scaleX(-1); /* Mirror the video */
+      }
+      .error {
+        color: white;
+        text-align: center;
+        padding: 20px;
+        font-family: sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <video id="video" autoplay playsinline></video>
+    <div id="error" class="error" style="display: none">
+      Unable to access camera. Please ensure you have granted camera
+      permissions.
+    </div>
+    <script>
+      const video = document.getElementById('video');
+      const error = document.getElementById('error');
+
+      async function setupCamera() {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: {
+              facingMode: 'user',
+              width: { ideal: 1280 },
+              height: { ideal: 720 },
+            },
+          });
+          video.srcObject = stream;
+        } catch (err) {
+          console.error('Error accessing camera:', err);
+          error.style.display = 'block';
+          video.style.display = 'none';
+        }
+      }
+
+      // Start the camera when the page loads
+      setupCamera();
+
+      // Clean up when the page is closed
+      window.addEventListener('beforeunload', () => {
+        if (video.srcObject) {
+          video.srcObject.getTracks().forEach((track) => track.stop());
+        }
+      });
+    </script>
+  </body>
+</html>

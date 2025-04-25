@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        min-height: 100vh;
+        cursor: pointer;
+      }
+    </style>
+    <script>
+      function openPopup() {
+        window.open(
+          'https://recompose.life/our-model/',
+          'popup',
+          'width=800,height=600,scrollbars=yes,resizable=yes',
+        );
+        return false;
+      }
+    </script>
+  </head>
+  <body onclick="openPopup()">
+    <img src="form.jpg" alt="Form" />
+  </body>
+</html>
