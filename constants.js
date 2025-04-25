@@ -1,38 +1,38 @@
 export const mainInnerHTML = `
   <article class="one" style="">
-    <img src="/images/beach.png" alt="Beach" />
+    <img src="images/beach.png" alt="Beach" />
     <div class="description">
     </div>
   </article>
   <article class="two">
-    <img src="/images/ocean.jpg" alt="Ocean" />
+    <img src="images/ocean.jpg" alt="Ocean" />
   </article>
   <article class="three">
-    <img src="/images/field.jpg" alt="Field" />
+    <img src="images/field.jpg" alt="Field" />
     <p class="author"></p>
   </article>
   <article class="four">
-    <img src="/images/powerline.jpg" alt="Powerline" />
+    <img src="images/powerline.jpg" alt="Powerline" />
     <p class="author"></p>
   </article>
   <article class="five">
-    <img src="/images/beach.png" alt="Beach" />
+    <img src="images/beach.png" alt="Beach" />
     <p class="author"></p>
   </article>
   <article class="six">
-    <img src="/images/ocean.jpg" alt="Ocean" />
+    <img src="images/ocean.jpg" alt="Ocean" />
     <p class="author"></p>
   </article>
   <article class="seven">
-    <img src="/images/ocean.jpg" alt="Ocean" />
+    <img src="images/ocean.jpg" alt="Ocean" />
     <p class="author"></p>
   </article>
   <article class="eight">
-    <img src="/images/ocean.jpg" alt="Ocean" />
+    <img src="images/ocean.jpg" alt="Ocean" />
     <p class="author"></p>
   </article>
   <article class="nine">
-    <img src="/images/ocean.jpg" alt="Ocean" />
+    <img src="images/ocean.jpg" alt="Ocean" />
     <p class="author"></p>
   </article>
 `;
