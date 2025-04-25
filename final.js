@@ -158,6 +158,8 @@ function handleScroll() {
         setTimeout(() => {
           birdcall.play();
         }, 1000);
+        
+        root.style.setProperty('--background', 'black');
       }
       return;
     }
