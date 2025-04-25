@@ -87,20 +87,29 @@
 }
 @font-face {
     font-family: 'Courier Prime';
-    src: url('/fonts/CourierPrime/CourierPrime-Regular.ttf') format('truetype');
+    src: url('/fonts/Courier_Prime/CourierPrime-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
 }
 
-#loading-text {
+.text {
   font-family: 'Courier Prime', monospace;
   position: fixed;
+  transform: translate(-50%, -50%);
+  font-size: 1.2em;
+  opacity: 0;
+  transition: opacity 0.5s ease;
   top: 70%;
   left: 50%;
-  transform: translate(-50%, -50%);
+}
+
+#closing-text {
+  color: white;
+}
+
+#loading-text {
   color: black;
-  font-size: 1em;
   opacity: 0;
   transition: opacity 0.5s ease;
 }
@@ -680,4 +689,52 @@ span:hover {
   width: 50vw;
   max-width: 400px;
   position: absolute;
+}
+
+.compass {
+  position: fixed;
+  bottom: 2%;
+  right: 6%;
+  width: 6px;
+  height: 100px;
+  z-index: 1000;
+  transform-origin: center center;
+  transition: transform 0.3s ease;
+}
+
+.compass::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, #ff4444 50%, #ffffff 50%);
+  clip-path: polygon(50% -50%, 100% -30%, 50% 50%, 0 -30%);
+  transform-origin: center center;
+  transform: translateY(-50%);
+  animation: quiver 0.5s ease-in-out infinite alternate;
+  box-shadow: 0 0 20px rgba(0, 0, 255, 0.3);
+}
+
+.compass::after {
+  content: 'N';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -100%);
+  color: #ffffff;
+  font-family: 'Courier Prime', monospace;
+  font-size: 12px;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(0, 0, 255, 0.5);
+}
+
+@keyframes quiver {
+  0% {
+    transform: translateY(-50%) rotate(calc(var(--compass-rotation) * 1deg - 0.5deg));
+  }
+  100% {
+    transform: translateY(-50%) rotate(calc(var(--compass-rotation) * 1deg + 0.5deg));
+  }
 }

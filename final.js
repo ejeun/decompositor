@@ -6,13 +6,39 @@ const birdcall = new Audio('./frames/call.wav')
 let audioElement = null;
 let visualizer = null;
 
+const showClosing = () => {
+  const closing = document.createElement('div');
+  closing.id = 'closing-text';
+  closing.className = 'text';
+  closing.innerHTML = `Everything was blended in a synesthetic blur of wind and calls. <br> 
+  <br>
+  But after a confusing first day, you have successfully become the migratory flock. <br> 
+  <br>
+  You find rest for the night.`;
+  closing.onclick = () => {
+    window.location.reload();
+  };
+  document.body.appendChild(closing);
+  // Fade in closing text
+  setTimeout(() => {
+    closing.style.opacity = '1';
+  }, 300);
+};
+
 function createMainSection() {
   const main = document.createElement('main');
   const root = document.querySelector(':root');
   const body = document.querySelector('body');
   body.style.height = '15000px';
   main.innerHTML = mainInnerHTML;
+  
+  // Create and add compass
+  const compass = document.createElement('div');
+  compass.className = 'compass';
+  main.appendChild(compass);
+  
   root.style.setProperty('--background', 'rgb(136, 161, 182)');
+  root.style.setProperty('--compass-rotation', '0');
   return main;
 }
 
@@ -65,10 +91,37 @@ function handleScroll() {
       (Math.floor(window.scrollY - 15000) / -100).toFixed(1),
     );
 
-    if (currentScroll >= 13000) {
-      //Fade out birdcall
+    // Update compass rotation based on scroll position
+    const maxScroll = 15000;
+    const rotationDegrees = (currentScroll / maxScroll) * 720; // 2 full rotations
+
+    if (rotationDegrees < 180) {
+      root.style.setProperty('--compass-rotation', rotationDegrees.toFixed(2));
+    } else {
+      const random = Math.random(); 
+      let newRotation = 0;
+      if (random < 0.5) {
+        newRotation = rotationDegrees;
+      } else {
+        const currentRotation = parseFloat(root.style.getPropertyValue('--compass-rotation'));
+        const diff = currentRotation - rotationDegrees;
+        newRotation = currentRotation + diff;
+      }
+      root.style.setProperty('--compass-rotation', newRotation.toFixed(2));
+    }
+
+    // Add some random quiver to the compass
+    const quiverAmount = Math.sin(Date.now() / 500) * 2;
+    const compass = document.querySelector('.compass');
+    if (compass) {
+      compass.style.transform = `rotate(${quiverAmount}deg)`;
+    }
+
+    if (currentScroll >= 14000) {
+      // Set the background to black
       birdcall.pause();
       visualizer.stop();
+      showClosing();
       return;
     }
 
@@ -105,6 +158,8 @@ function handleScroll() {
         setTimeout(() => {
           birdcall.play();
         }, 1000);
+
+        root.style.setProperty('--background', 'black');
       }
       return;
     }
@@ -182,21 +237,9 @@ window.onload = () => {
     blankPage.style.pointerEvents = 'none';
     
     try {
-      // Show loading text
-      const loadingText = document.createElement('div');
-      loadingText.id = 'loading-text';
-      loadingText.style.color = 'black';
-      loadingText.style.fontSize = '1em';
-      loadingText.style.fontFamily = 'Courier New, sans-serif';
-      loadingText.style.opacity = '0';
-      loadingText.style.transition = 'opacity 0.5s ease';
+      const loadingText = document.getElementById('loading-text');
       loadingText.textContent =
         'I started to think that I wanted to fly away...';
-      loadingText.style.position = 'fixed';
-      loadingText.style.top = '70%';
-      loadingText.style.left = '50%';
-      loadingText.style.transform = 'translate(-50%, -50%)';
-      blankPage.appendChild(loadingText);
 
       // Fade in loading text
       setTimeout(() => {
@@ -246,6 +289,7 @@ window.onload = () => {
           .catch((e) => console.error('Audio playback error:', e));
 
         setTimeout(() => {
+          // showClosing();
           fadeOutLoadingText(createAndShowForm);
         }, 3000);
       });
